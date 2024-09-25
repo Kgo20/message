@@ -1,6 +1,7 @@
 package ca.usherbrooke.fgen.api.service;
 
 import ca.usherbrooke.fgen.api.business.Message;
+import ca.usherbrooke.fgen.api.business.Message2;
 import ca.usherbrooke.fgen.api.mapper.MessageMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jsoup.parser.Parser;
@@ -89,5 +90,13 @@ public class MessageService {
 				.stream()
 				.map(MessageService::unescapeEntities)
 				.collect(Collectors.toList());
+	}
+
+	@POST
+	@Path("message")
+	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
+	public void insertMessage(Message2 message) { // Ajoutez le paramètre
+		System.out.println("Insert message called with: " + message.description);
+		Database.saveMessage(message.description); // Assurez-vous d'utiliser la description du message
 	}
 }
