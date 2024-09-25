@@ -1,22 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Bienvenue sur le serveur académique de gegi!</title>
-    <style>
-        body {
-            width: 35em;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message</title>
 </head>
 <body>
-<h1>Bienvenue sur le proxy de votre projet </h1>
-<p>Si vous voyez cette page, le serveur académique de gegi est correctement installé
-    et fonctionnel.
-</p>
+<h1>Ajouter un Message</h1>
 
+<input type="text" id="messageInput" placeholder="Entrez votre message" />
+<button id="sendMessageBtn">Envoyer le message</button>
 
-<p><em>L'équipe de support informatique.</em></p>
+<script>
+    document.getElementById('sendMessageBtn').addEventListener('click', function() {
+        // Récupérer le contenu de l'input
+        const messageContent = document.getElementById('messageInput').value;
+
+        // Créer un objet message
+        const message = {
+            description: messageContent // Ajustez cela selon la structure de votre objet Message
+        };
+
+        // Envoyer le POST à l'API
+        fetch('http://localhost:8888/api/message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de l\'envoi du message');
+                }
+                // Vérifier s'il y a un contenu à traiter
+                return response.text().then(text => {
+                    return text ? JSON.parse(text) : {}; // Si le texte est vide, retourner un objet vide
+                });
+            })
+            .then(data => {
+                console.log('Message envoyé avec succès:', data);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+
+    });
+
+</script>
 </body>
 </html>
