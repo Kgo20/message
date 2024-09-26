@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Vierge</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f6f8fa;
+        }
+        
+        #search-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px; /* Ajoute un espacement pour le tableau */
+        }
+        
+        #search-bar input {
+            padding: 10px;
+            border: 1px solid #000;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        #search-button {
+            padding: 10px 20px;
+            border: 1px solid #000;
+            border-radius: 20px;
+            background-color: aqua;
+            cursor: pointer;
+        }
+
+        #back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border: 1px solid #000;
+            border-radius: 20px;
+            background-color: #db0707;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin-top: 20px; /* Espace entre la barre de recherche et le tableau */
+        }
+
+        table, th, td {
+            border: 1px solid #000;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <button id="back-button" onclick="window.location.href='index.html'">Retour</button>
+
+    <div id="search-bar">
+        <input type="text" id="SymbolInput" placeholder="Rechercher...">
+        <button id="search-button" onclick="fillResultTable(document.getElementById('SymbolInput').value)">Entrer</button>
+    </div>
+
+    <h3 id="priceOutput"></h3>
+
+    <!-- Ajout du tableau à une ligne et 8 colonnes -->
+    <table>
+        <tr>
+            <td>Symbole</td>
+            <td>Prix actuel</td>
+            <td>Variation</td>
+            <td>Variation %</td>
+            <td>Plus haut prix de la journée</td>
+            <td>Plus bas prix de la journée</td>
+            <td>Première vente du jours</td>
+            <td>Dernière vente hier</td>
+        </tr>
+        <tr>
+            <td id="Symbol"></td>
+            <td id="Price"></td>
+            <td id="Var"> </td>
+            <td id="VarPercent"></td>
+            <td id="High"></td>
+            <td id="Low"></td>
+            <td id="OpenPrice"></td>
+            <td id="ClosePrice"></td>
+        </tr>
+
+    </table>
+
+    <script>
+        function fillResultTable(symbol){
+            const apiKey = "cror3bhr01qo7n2ihk7gcror3bhr01qo7n2ihk80"; // API key compte zach pour finnhub
+            fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("Symbol").textContent = symbol;
+                    document.getElementById("Price").textContent = data.c;
+                    document.getElementById("Var").textContent = data.d;
+                    document.getElementById("VarPercent").textContent = data.dp;
+                    document.getElementById("High").textContent = data.h;
+                    document.getElementById("Low").textContent = data.l;
+                    document.getElementById("OpenPrice").textContent = data.o;
+                    document.getElementById("ClosePrice").textContent = data.pc;
+                })
+                .catch(error => console.error('Error:', error)
+            );
+        }
+    </script>
+</body>
+</html>
