@@ -54,5 +54,11 @@ INSERT INTO  usager(cip, prenom, nom, courriel, mot_passe, date_creation) VALUES
 INSERT INTO  log(cip_usager, description, date_creation) VALUES ('roya1414','A achete une action','2024-09-25 19:10:25-07');
 INSERT INTO  compte(nom, montant, montant_depart, date_creation, cip) VALUES ('creativipi', 10000, 8000, '2024-09-25 19:10:25-07', 'roya1414');
 INSERT INTO  action(diminutif, nom, date_creation) VALUES ('aapl', 'Apple', '2024-09-25 19:10:25-07');
+INSERT INTO  action(diminutif, nom, date_creation) VALUES ('qbr', 'Québecor', '2024-09-25 19:10:25-07');
+INSERT INTO  action(diminutif, nom, date_creation) VALUES ('can', 'Canan', '2024-09-25 19:10:25-07');
+
+
 INSERT INTO  invest(prix_acquisition, quantie_action, date_creation, Id_Action, Id_Compte) VALUES (1800.57, 31, '2024-09-25 19:10:25-07', 1, 1);
 
+INSERT INTO  invest(prix_acquisition, quantie_action, date_creation, Id_Action, Id_Compte) VALUES (45.57, 12, '2024-09-25 19:10:25-07', 2, 1);
+INSERT INTO  invest(prix_acquisition, quantie_action, date_creation, Id_Action, Id_Compte) VALUES (666.57, 77, '2024-09-25 19:10:25-07', 3, 1);

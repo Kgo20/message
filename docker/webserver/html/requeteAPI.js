@@ -118,7 +118,7 @@ function afficherDonnees(data) {
             <td>${compte.quantie_action}</td> <!-- Quantité -->
             <td>${compte.prix_acquisition}</td> <!-- Prix d'acquisition -->
             <td>${compte.montant}</td> <!-- Prix actuel -->
-            <td>${calculateProfit(compte.prix_acquisition, compte.montant)}</td> <!-- Profit -->
+            <td>${calculateProfit(compte.prix_acquisition, compte.montant, compte.quantie_action)}</td> <!-- Profit -->
         `;
 
         // Ajouter la ligne au tbody
@@ -126,10 +126,10 @@ function afficherDonnees(data) {
     });
 }
 
-function calculateProfit(prixAcquisition, montant) {
+function calculateProfit(prixAcquisition, montant, quantity) {
     const acquisition = parseFloat(prixAcquisition) || 0;
     const currentPrice = parseFloat(montant) || 0;
-    return (currentPrice - acquisition).toFixed(2); // Retourne le profit formaté à 2 décimales
+    return ((currentPrice - acquisition) * quantity).toFixed(2); // Retourne le profit formaté à 2 décimales
 }
 
 document.addEventListener('DOMContentLoaded', function() {
