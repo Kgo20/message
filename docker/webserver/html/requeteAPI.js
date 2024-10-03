@@ -104,17 +104,36 @@ function getListActionCompte() {
 }
 
 function afficherDonnees(data) {
-    const container = document.getElementById('resultat'); // Un conteneur HTML pour afficher les données
+    const container = document.getElementById('resultat'); // Cibler le tbody
     container.innerHTML = ''; // Vider le conteneur avant d'ajouter les nouvelles données
 
     data.forEach(compte => {
-        const div = document.createElement('div');
-        div.textContent = `CIP: ${compte.cip}, Nom Usager: ${compte.nomUsager}, Montant: ${compte.montant}`;
-        container.appendChild(div);
+        // Créer une nouvelle ligne
+        const row = document.createElement('tr');
+
+        // Ajouter des cellules avec les données appropriées
+        row.innerHTML = `
+            <td>${compte.diminutif}</td> <!-- Symbole -->
+            <td>${compte.nom}</td> <!-- Nom -->
+            <td>${compte.quantie_action}</td> <!-- Quantité -->
+            <td>${compte.prix_acquisition}</td> <!-- Prix d'acquisition -->
+            <td>${compte.montant}</td> <!-- Prix actuel -->
+            <td>${calculateProfit(compte.prix_acquisition, compte.montant)}</td> <!-- Profit -->
+        `;
+
+        // Ajouter la ligne au tbody
+        container.appendChild(row);
     });
 }
 
+function calculateProfit(prixAcquisition, montant) {
+    const acquisition = parseFloat(prixAcquisition) || 0;
+    const currentPrice = parseFloat(montant) || 0;
+    return (currentPrice - acquisition).toFixed(2); // Retourne le profit formaté à 2 décimales
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("ccc");
     getListActionCompte();
 });
 
