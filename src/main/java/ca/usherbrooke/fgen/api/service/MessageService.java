@@ -1,5 +1,6 @@
 package ca.usherbrooke.fgen.api.service;
 
+import ca.usherbrooke.fgen.api.business.Info;
 import ca.usherbrooke.fgen.api.business.Message;
 import ca.usherbrooke.fgen.api.business.Message2;
 import ca.usherbrooke.fgen.api.mapper.MessageMapper;
@@ -9,6 +10,7 @@ import org.jsoup.parser.Parser;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,10 +22,8 @@ import java.util.stream.Collectors;
 @Consumes(MediaType.APPLICATION_JSON)
 public class MessageService {
 
-
 	@Inject
 	MessageMapper messageMapper;
-
 
 	@GET
 	@Path("getmessages/{trimester}/{profile}/{unit}")
@@ -92,11 +92,11 @@ public class MessageService {
 				.collect(Collectors.toList());
 	}
 
-	@POST
-	@Path("message")
+	@GET
+	@Path("listActionCompte")
 	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
-	public void insertMessage(Message2 message) { // Ajoutez le paramètre
-		System.out.println("Insert message called with: " + message.description);
-		//Database.saveMessage(message.description); // Assurez-vous d'utiliser la description du message
+	public List<Info> insertMessage(@QueryParam("cip") String cip) { // Ajoutez le paramètre
+		System.out.println("Insert message called with: " + cip);
+		return Database.loadCompte(cip);
 	}
 }

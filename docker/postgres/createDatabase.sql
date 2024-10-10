@@ -154,6 +154,7 @@ set @Result = SELECT COUNT(*) FROM compte AS com
     LEFT JOIN invest AS inv ON com.id_compte = inv.id_compte
     LEFT JOIN action AS act ON inv.id_action = act.id_action
     WHERE act.symbole = 'aapl';
+/*
 IF ( = 0)
 BEGIN
 -- do one thing
@@ -165,3 +166,5 @@ BEGIN
 -- do the other thing(s)
 END
 END IF;
+
+ */
