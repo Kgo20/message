@@ -99,4 +99,20 @@ public class MessageService {
 		System.out.println("Insert message called with: " + cip);
 		return Database.loadCompte(cip);
 	}
+
+	@POST
+	@Path("buyAction")
+	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
+	public List<Info> buyAction(@QueryParam("cip") String cip) { // Ajoutez le paramètre
+		System.out.println("Insert message called with: " + cip);
+		return Database.loadCompte(cip);
+	}
+
+	@POST
+	@Path("sellAction")
+	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
+	public List<Info> sellAction(@QueryParam("cip") String cip) { // Ajoutez le paramètre
+		System.out.println("Insert message called with: " + cip);
+		return Database.loadCompte(cip);
+	}
 }

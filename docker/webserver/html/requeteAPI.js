@@ -132,10 +132,60 @@ function calculateProfit(prixAcquisition, montant, quantity) {
     return ((currentPrice - acquisition) * quantity).toFixed(2); // Retourne le profit formaté à 2 décimales
 }
 
+    var keycloak;
+    function initKeycloak() {
+        keycloak = new Keycloak({
+            "realm": "usager",
+            "auth-server-url": "http://localhost:8180/",
+            "ssl-required": "external",
+            "clientId": "frontend",
+            "public-client": true,
+            "confidential-port": 0
+        });
+        keycloak.init({onLoad: 'login-required'}).then(function (authenticated) {
+            alert(authenticated ? 'authenticated' : 'not authenticated');
+
+        }).catch(function () {
+            alert('failed to initialize');
+        });
+    }
+    initKeycloak();
+
+function requestStudent() {
+    const div = document.getElementById('title');
+
+    fetch("http://localhost:8888/api/student", {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + keycloak.token
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Response: ", data);
+        })
+        .catch(error => {
+            console.log('refreshing');
+            keycloak.updateToken(5).then(() => {
+                console.log('Token refreshed');
+            }).catch(() => {
+                console.log('Failed to refresh token');
+            });
+        });
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("ccc");
     getListActionCompte();
 });
+
+
 
 
 
