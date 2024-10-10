@@ -97,6 +97,6 @@ public class MessageService {
 	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
 	public void insertMessage(Message2 message) { // Ajoutez le paramètre
 		System.out.println("Insert message called with: " + message.description);
-		Database.saveMessage(message.description); // Assurez-vous d'utiliser la description du message
+		//Database.saveMessage(message.description); // Assurez-vous d'utiliser la description du message
 	}
 }
