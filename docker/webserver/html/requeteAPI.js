@@ -11,8 +11,6 @@ function buyAction() {
         if (isSubmitting) return;
         isSubmitting = true;
 
-
-
         const symbole = document.getElementById('Symbol').textContent;
         const nomAction = document.getElementById('Symbol').textContent;
         const nbAction = "7";
@@ -66,15 +64,15 @@ function sellAction() {
 
 
 
-        const symbole = document.getElementById('Symbol').textContent;
-        const prixVente = document.getElementById('price').textContent;
+        //const symbole = document.getElementById('Symbol').textContent;
+        //const prixVente = document.getElementById('price').textContent;
 
         const infoSell = {
-            symbole: symbole,
-            compte: "4",
+            symbole: "ff",
+            compte: "1",
             cip: cip,
             nbAVendre: "2",
-            prixVente: prixVente,
+            prixVente: "45",
         };
 
         console.log(JSON.stringify(infoSell));

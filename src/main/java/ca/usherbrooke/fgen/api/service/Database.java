@@ -13,6 +13,7 @@ public class Database {
 
     public static List<Info> loadCompte(String cip) {
         List<Info> comptes = new ArrayList<>();
+
         String query = "select u.cip, u.prenom, u.nom, c.nom AS nomCompte, c.montant, c.montant_depart, i.prix_acquisition, i.quantite_action, a.symbole, a.nom AS nomAction " +
                 "from usager as u " +
                 "    inner join compte as c ON u.cip = c.cip " +
@@ -119,54 +120,48 @@ public class Database {
         }
     }
 
-    public static void vendreAction(String nomSymbole, String idCompte, int nbAction, double prixPaye){
-
+    public static void vendreAction(String nomSymbole, String idCompte, int nbAction, double prixPaye) {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
 
             //----------Update Compte-------------
-            String updateCompte = "UPDATE compte\n" +
-                    "SET montant = montant + " + prixPaye +
-                    " WHERE Id_compte = " + idCompte +
-                    " AND (SELECT prix_acquisition FROM invest WHERE Id_Action = " +
-                    "(SELECT Id_Action FROM action WHERE symbole = " + nomSymbole + ")) - "
-                    + prixPaye + " >= 0 " +
+            String updateCompte = "UPDATE compte SET montant = montant + ? " +
+                    "WHERE Id_compte = ? " +
+                    "AND (SELECT prix_acquisition FROM invest WHERE Id_Action = " +
+                    "(SELECT Id_Action FROM action WHERE symbole = ?)) - ? >= 0 " +
                     "AND (SELECT quantite_action FROM invest WHERE Id_Action = " +
-                    "(SELECT Id_Action FROM action WHERE symbole = " + nomSymbole + ")) - "
-                    + nbAction + " >= 0 ;";
+                    "(SELECT Id_Action FROM action WHERE symbole = ?)) - ? >= 0;";
 
-            // Préparer la requête SQL
             PreparedStatement stmtV1 = conn.prepareStatement(updateCompte);
-            // Exécuter la requête pour changer les données
-            stmtV1.executeQuery();
-
+            stmtV1.setDouble(1, prixPaye);
+            stmtV1.setInt(2, Integer.parseInt(idCompte));
+            stmtV1.setString(3, nomSymbole);
+            stmtV1.setDouble(4, prixPaye);
+            stmtV1.setString(5, nomSymbole);
+            stmtV1.setInt(6, nbAction);
+            stmtV1.executeUpdate();
 
             //----------Update invest-------------
-            String updateInvest = "UPDATE invest\n" +
-                    "SET prix_acquisition = prix_acquisition - " + prixPaye +
-                    "    , quantite_action = quantite_action - " + nbAction +
-                    " WHERE Id_Compte = " + idCompte +
-                    "  AND Id_Action = (SELECT Id_Action FROM action WHERE symbole = " + nomSymbole + ")" +
-                    "  AND prix_acquisition - " + prixPaye + " >= 0 AND quantite_action - " + nbAction + " >= 0 ;";
-
-            // Préparer la requête SQL
+            String updateInvest = "UPDATE invest SET " +
+                    "quantite_action = quantite_action - ? " +
+                    "WHERE Id_Compte = ? " +
+                    "AND Id_Action = (SELECT Id_Action FROM action WHERE symbole = ?) " +
+                    "AND quantite_action - ? >= 0;";
+            System.out.println(updateInvest);
             PreparedStatement stmtV2 = conn.prepareStatement(updateInvest);
-            // Exécuter la requête
-            stmtV2.executeQuery();
+            stmtV2.setInt(1, nbAction);
+            stmtV2.setInt(2, Integer.parseInt(idCompte));
+            stmtV2.setString(3, nomSymbole);
+            stmtV2.setInt(4, nbAction);
+            stmtV2.executeUpdate();
 
+            //----------Delete from invest-------------
+            String deleteInvest = "DELETE FROM invest WHERE quantite_action = 0;";
 
-            // Delete section dans investissement
-            String deleteInvest = "DELETE FROM invest AS inv WHERE inv.quantite_action = 0;";
-
-            // Préparer la requête SQL
             PreparedStatement stmtV3 = conn.prepareStatement(deleteInvest);
-            // Exécuter la requête pour changer les données
-            stmtV3.executeQuery();
+            stmtV3.executeUpdate();
 
-
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-
         }
     }
 }

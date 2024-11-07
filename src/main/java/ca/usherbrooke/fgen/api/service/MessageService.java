@@ -108,7 +108,6 @@ public class MessageService {
 		System.out.println("Infos reçues: " + infoBuy.getPrixCourant());
 		System.out.println("Infos reçues: " + infoBuy.getCompte());
 		Database.acheterAction(infoBuy.getNom(), infoBuy.getSymbole(), infoBuy.getCompte(), Integer.parseInt(infoBuy.getNbAction()), Double.parseDouble(infoBuy.getPrixCourant()));
-
 		// Vous pouvez ici traiter les données comme nécessaire
 		return true;
 	}
@@ -118,6 +117,7 @@ public class MessageService {
 	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
 	public boolean sellAction(Sell sell) { // Ajoutez le paramètre
 		System.out.println("Delete " + sell.getSymbole() + " " + sell.getCip() + " " + sell.getCompte());
+		System.out.println(sell.getCip() + " " + sell.getCompte()  + " " + sell.getSymbole() + " " + sell.getPrixVente() + " " + sell.getNbAVendre());
 		Database.vendreAction(sell.getSymbole(), sell.getCompte(), Integer.parseInt(sell.getNbAVendre()), Double.parseDouble(sell.getPrixVente()));
 		return true;
 	}
