@@ -25,7 +25,6 @@ function buyAction() {
             compte: compte,
         };
 
-
         console.log(JSON.stringify(buy));
         fetch('http://localhost:8888/api/buyAction', {
             method: 'POST',
@@ -148,6 +147,7 @@ function afficherDonnees(data) {
             <td>${compte.prix_acquisition}</td> <!-- Prix d'acquisition -->
             <td>${compte.montant}</td> <!-- Prix actuel -->
             <td>${calculateProfit(compte.prix_acquisition, compte.montant, compte.quantie_action)}</td> <!-- Profit -->
+            <td><button class="btn_vendre" id="${compte.diminutif}">Delete</button></td>
         `;
 
         // Ajouter la ligne au tbody
