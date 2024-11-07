@@ -1,8 +1,6 @@
 package ca.usherbrooke.fgen.api.service;
 
-import ca.usherbrooke.fgen.api.business.Info;
-import ca.usherbrooke.fgen.api.business.Message;
-import ca.usherbrooke.fgen.api.business.Message2;
+import ca.usherbrooke.fgen.api.business.*;
 import ca.usherbrooke.fgen.api.mapper.MessageMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jsoup.parser.Parser;
@@ -98,5 +96,29 @@ public class MessageService {
 	public List<Info> insertMessage(@QueryParam("cip") String cip) { // Ajoutez le paramètre
 		System.out.println("Insert message called with: " + cip);
 		return Database.loadCompte(cip);
+	}
+
+	@POST
+	@Path("buyAction")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public boolean buyAction(Buy infoBuy) {
+		System.out.println("Infos reçues: " + infoBuy.getNom());
+		System.out.println("Infos reçues: " + infoBuy.getSymbole());
+		System.out.println("Infos reçues: " + infoBuy.getNbAction());
+		System.out.println("Infos reçues: " + infoBuy.getPrixCourant());
+		System.out.println("Infos reçues: " + infoBuy.getCompte());
+		Database.acheterAction(infoBuy.getNom(), infoBuy.getSymbole(), infoBuy.getCompte(), Integer.parseInt(infoBuy.getNbAction()), Double.parseDouble(infoBuy.getPrixCourant()));
+		// Vous pouvez ici traiter les données comme nécessaire
+		return true;
+	}
+
+	@POST
+	@Path("sellAction")
+	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
+	public boolean sellAction(Sell sell) { // Ajoutez le paramètre
+		System.out.println("Delete " + sell.getSymbole() + " " + sell.getCip() + " " + sell.getCompte());
+		System.out.println(sell.getCip() + " " + sell.getCompte()  + " " + sell.getSymbole() + " " + sell.getPrixVente() + " " + sell.getNbAVendre());
+		Database.vendreAction(sell.getSymbole(), sell.getCompte(), Integer.parseInt(sell.getNbAVendre()), Double.parseDouble(sell.getPrixVente()));
+		return true;
 	}
 }

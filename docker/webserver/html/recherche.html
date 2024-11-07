@@ -5,80 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wall Street Dolphin - Recherche</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f6f8fa;
-        }
-        
-        #search-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px; /* Ajoute un espacement pour le tableau */
-        }
-        
-        #search-bar input {
-            padding: 10px;
-            border: 1px solid #000;
-            border-radius: 20px;
-            margin-right: 10px;
-        }
-
-        #search-button {
-            padding: 10px 20px;
-            border: 1px solid #000;
-            border-radius: 20px;
-            background-color: aqua;
-            cursor: pointer;
-        }
-
-        #back-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            border: 1px solid #000;
-            border-radius: 20px;
-            background-color: #db0707;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 80%;
-            margin-top: 20px; /* Espace entre la barre de recherche et le tableau */
-        }
-
-        table, th, td {
-            border: 1px solid #000;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <button id="back-button" onclick="window.location.href='index.html'">Retour</button>
 
-    <div id="search-bar">
-        <input list="api-options" id="SymbolInput" name="dynamic-input" autocomplete="off" placeholder="Rechercher...">
+<header>
+    <div id="logo">
+        <img src="./img/Clean_logo_fond_vide.png" alt="Logo">
+    </div>
+
+    <div class="btn1">
+        <a href="index.html" class="no-underline">Profil</a>
+    </div>
+
+    <div class="btn2">
+        <a href="recherche.html" class="no-underline">Recherche</a>
+    </div>
+
+    <style>
+        .no-underline {
+            text-decoration: none;
+        }
+    </style>
+    <span id="username">roya1414</span>
+</header>
+
+<main>
+    <div class="searchBox">
+
+        <input class="searchInput" type="text" list="api-options" id="SymbolInput" name="dynamic-input" autocomplete="off" placeholder="Inforamtion sur...">
         <datalist id="api-options"></datalist>
-        <button id="search-button"
+        <button id="search-button" class="searchButton" href="#"
                 onclick="fillResultTable(document.getElementById('SymbolInput').value);
                 fetch5Years(document.getElementById('SymbolInput').value);
                 fetch5Days(document.getElementById('SymbolInput').value);
+                playSound(); fillResultTable(document.getElementById('SymbolInput').value);
                 DrawGraph(document.getElementById('SymbolInput').value)">
-            Recherche
         </button>
+
+        <!-- Fichier audio -->
+        <audio id="audio" src="./sound/dophin.mp3"></audio>
+
+        <script>
+            function playSound() {
+                var audio = document.getElementById("audio");
+                audio.play();
+            }
+        </script>
     </div>
 
     <div id='DataGraph'></div>
@@ -123,6 +96,65 @@
         </tr>
     </table>
 
+
+
+
+    <button id="openModalBtn" class="open-btn">Acheter cette action</button>
+
+
+    <div id="myModal" class="modal">
+
+        <!-- Contenu de la modale -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+
+            <h2>Fenêtre d'âchat</h2>
+            <div style=" margin-top: 60%;">
+                <button class="btn_acheter">Acheter</button>
+                <button class="btn_vendre">Vendre</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Obtenir la modale
+        var modal = document.getElementById("myModal");
+
+        // Obtenir le bouton qui ouvre la modale
+        var btn = document.getElementById("openModalBtn");
+
+        // Obtenir l'élément <span> qui ferme la modale
+        var span = document.getElementsByClassName("close")[0];
+
+        // Quand l'utilisateur clique sur le bouton, ouvrir la modale
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        // Quand l'utilisateur clique sur <span> (x), fermer la modale
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        // Quand l'utilisateur clique n'importe où en dehors de la modale, fermer la modale
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+
+</main>
     <script>
         let storedData = [];
         let storedDataPrecise = [];
@@ -356,5 +388,6 @@
             Plotly.newPlot('DataGraph', data, layout, {scrollZoom: true});
         }
     </script>
+
 </body>
 </html>
