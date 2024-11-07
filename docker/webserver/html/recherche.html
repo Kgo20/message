@@ -74,6 +74,8 @@
         <datalist id="api-options"></datalist>
         <button id="search-button"
                 onclick="fillResultTable(document.getElementById('SymbolInput').value);
+                fetch5Years(document.getElementById('SymbolInput').value);
+                fetch5Days(document.getElementById('SymbolInput').value);
                 DrawGraph(document.getElementById('SymbolInput').value)">
             Recherche
         </button>
@@ -82,8 +84,8 @@
     <div id='DataGraph'></div>
 
     <div>
-        <input type="radio" name="date-range" id="0d"/>
-            <label for="0d">1 Jour</label>
+        <input type="radio" name="date-range" id="1d"/>
+            <label for="1d">1 Jour</label>
         <input type="radio" name="date-range" id="5d"/>
             <label for="5d">5 Jours</label>
         <input type="radio" name="date-range" id="1m"/>
@@ -122,6 +124,8 @@
     </table>
 
     <script>
+        let storedData = [];
+        let storedDataPrecise = [];
         const FMPapiKey = "hTK26S1kotNQBciHhEBBkyotOP0okUcL"; // API key compte zach pour FMP
         const apiKey = "cror3bhr01qo7n2ihk7gcror3bhr01qo7n2ihk80"; // API key compte zach pour finnhub
         function fillResultTable(symbol){
@@ -175,6 +179,108 @@
             fetchAPIData(symbol);
         }, 300));
 
+        function fetch5Years(symbol) {
+            const today = new Date();
+            const fiveYearsAgo = new Date();
+            fiveYearsAgo.setFullYear(today.getFullYear() - 5);
+
+            const GraphFromDate = fiveYearsAgo.toISOString().split('T')[0];  // 5 years ago
+            const GraphToDate = today.toISOString().split('T')[0];  // today
+
+            fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?from=${GraphFromDate}&to=${GraphToDate}&apikey=${FMPapiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    storedData = data["historical"];  // Store the data
+                    updateGraph('6m');  // By default, show data for the last 1 year
+                });
+        }
+
+        function fetch5Days(symbol){
+            let today = new Date();
+            let fiveDaysAgo = new Date();
+            fiveDaysAgo.setDate(today.getDate()-5);
+            const GraphFromDate = fiveDaysAgo.toISOString().split('T')[0];  // 5 years ago
+            const GraphToDate = today.toISOString().split('T')[0];  // today
+            const timeIntervals = "30min";
+            fetch(`https://financialmodelingprep.com/api/v3/historical-chart/${timeIntervals}/${symbol}?from=${GraphFromDate}&to=${GraphToDate}&apikey=${FMPapiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    storedDataPrecise = data;
+                })
+        }
+
+
+        function updateGraph(interval) {
+            let data = [];
+            const today = new Date();
+            let fromDate = new Date();
+
+            // Set the fromDate based on the selected interval
+            switch(interval) {
+                case '1d':  // 1 day
+                    data = storedDataPrecise;
+                    fromDate.setHours(9,30);
+                    break;
+                case '5d':  // 5 day
+                    data = storedDataPrecise;
+                    fromDate.setHours(9,30);
+                    fromDate.setDate(today.getDay() - 5);
+                    break;
+                case '1m':  // 1 month
+                    data = storedData;
+                    fromDate.setMonth(today.getMonth() - 1);
+                    break;
+                case '3m':  // 3 months
+                    data = storedData;
+                    fromDate.setMonth(today.getMonth() - 3);
+                    break;
+                case '6m':  // 6 months
+                    data = storedData;
+                    fromDate.setMonth(today.getMonth() - 6);
+                    break;
+                case 'ATJ':  // yearly
+                    data = storedData;
+                    fromDate = new Date(today.getFullYear(), 0, 1);
+                    break;
+                case '1y':  // 1 year
+                    data = storedData;
+                    fromDate.setFullYear(today.getFullYear() - 1);
+                    break;
+                case '5y':  // 5 years (full data)
+                    data = storedData;
+                    fromDate.setFullYear(today.getFullYear() - 5);
+                    break;
+                default:
+                    console.error("Invalid time interval selected");
+                    return;
+            }
+
+            fromDate = fromDate.toISOString().split('T')[0];
+
+            // Filter the stored data
+            const filteredData = data.filter(item => item.date >= fromDate);
+
+            // Extract date, open, high, low, close arrays
+            const dates = filteredData.map(item => item.date);
+            const opens = filteredData.map(item => item.open);
+            const highs = filteredData.map(item => item.high);
+            const lows = filteredData.map(item => item.low);
+            const closes = filteredData.map(item => item.close);
+
+            // Update the graph
+            drawGraph(dates, opens, highs, lows, closes);
+        }
+
+        const radioButtons = document.querySelectorAll('input[name="date-range"]');
+        radioButtons.forEach(timeInterval => {
+            timeInterval.addEventListener('change', () => {
+                const selectedTimeInterval = document.querySelector('input[name="date-range"]:checked');
+                if (selectedTimeInterval) {
+                    console.log(selectedTimeInterval.id);
+                    updateGraph(selectedTimeInterval.id);
+                }
+            });
+        });
 
         function DrawGraph(symbol) {
             let dates = [];
@@ -203,38 +309,6 @@
                     GraphFromDate.setDate(1);
                     GraphFromDate.setMonth(0);
                     break;
-            }
-            GraphFromDate = GraphFromDate.toISOString().split('T')[0];
-            GraphToDate = GraphToDate.toISOString().split('T')[0];
-            const timeIntervals = "30min";
-
-            console.log(GraphFromDate);
-            console.log(GraphToDate);
-            if(selectedTime.includes('d')){
-                fetch(`https://financialmodelingprep.com/api/v3/historical-chart/${timeIntervals}/${symbol}?from=${GraphFromDate}&to=${GraphToDate}&apikey=${FMPapiKey}`)
-                    .then(response => response.json()).then(data => {
-                    for (const item in data) {
-                        dates.push(data[item].date);
-                        opens.push(data[item].open);
-                        highs.push(data[item].high);
-                        lows.push(data[item].low);
-                        closes.push(data[item].close);
-                    }
-                    drawGraph(dates, opens, highs, lows, closes);
-                })
-            }
-            else{
-                fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?from=${GraphFromDate}&to=${GraphToDate}&apikey=${FMPapiKey}`)
-                .then(response => response.json()).then(data => {
-                    for (const item in data["historical"]) {
-                        dates.push(data["historical"][item].date);
-                        opens.push(data["historical"][item].open);
-                        highs.push(data["historical"][item].high);
-                        lows.push(data["historical"][item].low);
-                        closes.push(data["historical"][item].close);
-                    }
-                    drawGraph(dates, opens, highs, lows, closes);
-                })
             }
         }
 
@@ -268,6 +342,7 @@
                     domain: [0, 1],
                     title: 'Date',
                     type: 'date',
+                    showticklabels: false,
                     rangeslider: {
                         visible: false
                     }
@@ -279,7 +354,6 @@
                 }
             };
             Plotly.newPlot('DataGraph', data, layout, {scrollZoom: true});
-
         }
     </script>
 </body>

@@ -138,5 +138,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+function fetch5Years(symbol) {
+    const today = new Date();
+    const fiveYearsAgo = new Date();
+    fiveYearsAgo.setFullYear(today.getFullYear() - 5);
+
+    const GraphFromDate = fiveYearsAgo.toISOString().split('T')[0];  // 5 years ago
+    const GraphToDate = today.toISOString().split('T')[0];  // today
+
+    fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?from=${GraphFromDate}&to=${GraphToDate}&apikey=${FMPapiKey}`)
+        .then(response => response.json())
+        .then(data => {
+            storedData = data["historical"];  // Store the data
+            updateGraph('6m');  // By default, show data for the last 6 month
+        });
+    return storedData;
+}
+
+
 
 
