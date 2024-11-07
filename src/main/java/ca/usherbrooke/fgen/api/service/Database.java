@@ -13,7 +13,7 @@ public class Database {
 
     public static List<Info> loadCompte(String cip) {
         List<Info> comptes = new ArrayList<>();
-        String query = "select u.cip, prenom, u.nom, c.nom, montant, montant_depart, prix_acquisition, quantie_action, a.diminutif, a.nom as nomAction " +
+        String query = "select u.cip, u.prenom, u.nom, c.nom AS nomCompte, c.montant, c.montant_depart, i.prix_acquisition, i.quantite_action, a.symbole, a.nom AS nomAction " +
                 "from usager as u " +
                 "    inner join compte as c ON u.cip = c.cip " +
                 "    inner join invest as i ON i.id_compte = c.id_compte " +
@@ -36,8 +36,8 @@ public class Database {
                         rs.getString("montant"),
                         rs.getString("montant_depart"),
                         rs.getString("prix_acquisition"),
-                        rs.getString("quantie_action"),
-                        rs.getString("diminutif"),
+                        rs.getString("quantite_action"),
+                        rs.getString("symbole"),
                         rs.getString("nomAction")
                 );
                 System.out.println("----------------------------------------------ici2" + compte);
@@ -52,118 +52,105 @@ public class Database {
         return comptes;
     }
 
-    public static void acheterAction(String nomAction, String nomSymbole, String idCompte, int nbAction, String prixPaye) {
-
+    public static void acheterAction(String nomAction, String nomSymbole, String idCompte, int nbAction, double prixPaye) {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            /*
-            // Vérifier s'il y a déjà un investissement
-            String verfComp = "SELECT COUNT(*) FROM compte AS com " +
-                "LEFT JOIN invest AS inv ON com.id_compte = inv.id_compte " +
-                "LEFT JOIN action AS act ON inv.id_action = act.id_action " +
-                "WHERE act.symbole = " + nomSymbole;
 
-            // Préparer la requête SQL
-            PreparedStatement stmt = conn.prepareStatement(verfComp);
-            //stmt1.setString(1, nomSymbole); //UTILISÉ AVANT
-            // Exécuter la requête et récupérer les résultats
-            ResultSet rs1 = stmt.executeQuery();
+            //----------Create action-------------
+            String insertAction = "INSERT INTO action(symbole, nom) VALUES (?, ?) ON CONFLICT (symbole) DO NOTHING;";
+            PreparedStatement stmtA1 = conn.prepareStatement(insertAction);
 
-            // Parcourir les résultats
-            int nbSymbol = rs1.getInt("count");
-            */
+            stmtA1.setString(1, nomSymbole);
+            stmtA1.setString(2, nomAction);
 
-            ///---^JUSTE DES NOTES^---///
-
-            //----------Update invest-------------
-            String updateInvest = "UPDATE invest " +
-                    "SET prix_acquisition = inv.prix_acquisition + " + prixPaye + ", " +
-                    "quantite_action = inv.quantite_action + " + nbAction +
-                    "FROM invest AS inv " +
-                    "INNER JOIN action AS act ON inv.Id_Action = act.Id_Action " +
-                    "INNER JOIN compte AS com on com.Id_Compte = inv.Id_Compte " +
-                    "WHERE inv.id_compte = 1 AND act.symbole = " + nomSymbole + " AND act.nom = nomAction " +
-                    "AND montant - prixPaye >= 0;";
-
-            // Préparer la requête SQL
-            PreparedStatement stmtA1 = conn.prepareStatement(updateInvest);
+            System.out.println(insertAction);
             // Exécuter la requête pour changer les données
-            stmtA1.executeQuery();
+            stmtA1.executeUpdate();  // Utilisez executeUpdate pour INSERT
+
+            //----------Create invest-------------
+            String insertInvest = "INSERT INTO invest(prix_acquisition, quantite_action, Id_action, Id_Compte) " +
+                    "VALUES (?, ?, " +
+                    "(SELECT Id_Action FROM action WHERE symbole = ?), ?) " + // Corrigé ici
+                    "ON CONFLICT (Id_action, Id_Compte) DO NOTHING;";
+
+            PreparedStatement stmtA2 = conn.prepareStatement(insertInvest);
+            stmtA2.setDouble(1, prixPaye);
+            stmtA2.setInt(2, nbAction);
+
+
+            stmtA2.setString(3, nomSymbole);
+            stmtA2.setInt(4, Integer.parseInt(idCompte)); // Remplacez le idCompte par le paramètre correspondant
+            int rowsAffectedCreateInvest = stmtA2.executeUpdate();  // Utilisez executeUpdate pour INSERT
+            System.out.println("111111111111111111111111111111111111" + rowsAffectedCreateInvest);
+            if(rowsAffectedCreateInvest == 0) {
+                //----------Update invest-------------
+                String updateInvest = "UPDATE invest " +
+                        "SET prix_acquisition = ((prix_acquisition * quantite_action) + ? * ?)/ (quantite_action + ?), " +
+                        "quantite_action = quantite_action + ? " +
+                        "WHERE Id_Compte = ? " +
+                        "AND Id_Action = (SELECT Id_Action FROM action WHERE symbole = ?) " +
+                        "AND (SELECT montant FROM compte WHERE Id_Compte = ?) - ? >= 0;";
+
+                PreparedStatement stmtA3 = conn.prepareStatement(updateInvest);
+
+                stmtA3.setDouble(1, prixPaye);
+                stmtA3.setInt(2, nbAction);
+                stmtA3.setInt(3, nbAction);
+                stmtA3.setInt(4, nbAction);
+                stmtA3.setInt(5, Integer.parseInt(idCompte));
+                stmtA3.setString(6, nomSymbole);
+                stmtA3.setInt(7, Integer.parseInt(idCompte));
+                stmtA3.setDouble(8, prixPaye);
+                stmtA3.executeUpdate();  // Utilisez executeUpdate pour UPDATE
+            }
 
             //----------Update compte-------------
             String updateCompte = "UPDATE compte AS com " +
-                    "SET montant = montant - " + prixPaye +
-                    "FROM invest AS inv " +
-                    "INNER JOIN action AS act ON inv.Id_Action = act.Id_Action " +
-                    "WHERE com.Id_Compte = inv.Id_Compte AND inv.id_compte = " + idCompte +
-                    " AND act.symbole = " + nomSymbole + " AND act.nom = " + nomAction +
-                    " AND montant - " + prixPaye + " >= 0;";
+                    "SET montant = montant - ? " +
+                    "WHERE Id_compte = ? " +
+                    "AND montant - ? >= 0;";
 
-            // Préparer la requête SQL
-            PreparedStatement stmtA2 = conn.prepareStatement(updateCompte);
-            // Exécuter la requête pour changer les données
-            stmtA2.executeQuery();
-
-            //----------Create action-------------
-            String insertAction = "INSERT INTO action(symbole , nom) " +
-                    "VALUES (" + nomSymbole + ", " + nomAction + ") " +
-                    "ON CONFLICT (symbole, nom) DO NOTHING;";
-
-            // Préparer la requête SQL
-            PreparedStatement stmtA3 = conn.prepareStatement(insertAction);
-            // Exécuter la requête pour changer les données
-            stmtA3.executeQuery();
-
-            //----------Create invest-------------
-            String insertInvest = "INSERT INTO invest(prix_acquisition , quantite_action, Id_action, Id_Compte) " +
-                    "VALUES (" + prixPaye + ", " + nbAction + ", " +
-                    "(SELECT id_action FROM action WHERE symbole = " + nomSymbole + " AND nom = " + nomAction + "), " +
-                    idCompte + ") ON CONFLICT (Id_action, Id_Compte) DO NOTHING;";
-
-            // Préparer la requête SQL
-            PreparedStatement stmtA4 = conn.prepareStatement(insertInvest);
-            // Exécuter la requête pour changer les données
-            stmtA4.executeQuery();
-
-
-        }
-        catch(SQLException e){
+            PreparedStatement stmtA4 = conn.prepareStatement(updateCompte);
+            stmtA4.setDouble(1, prixPaye);
+            stmtA4.setInt(2, Integer.parseInt(idCompte));
+            stmtA4.setDouble(3, prixPaye);
+            stmtA4.executeUpdate();  // Utilisez executeUpdate pour UPDATE
+        } catch (SQLException e) {
             e.printStackTrace();
-
         }
     }
 
-
-    public static void vendreAction(String nomAction, String nomSymbole, String idCompte, int nbAction, String prixPaye){
+    public static void vendreAction(String nomSymbole, String idCompte, int nbAction, double prixPaye){
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
 
-            String updateInvest = "UPDATE compte AS com" +
+            //----------Update Compte-------------
+            String updateCompte = "UPDATE compte\n" +
                     "SET montant = montant + " + prixPaye +
-                    "FROM invest AS inv" +
-                    "INNER JOIN action AS act ON inv.Id_Action = act.Id_Action" +
-                    "WHERE com.Id_Compte = inv.Id_Compte AND inv.id_compte = " + idCompte +
-                    "AND act.symbole = " + nomSymbole + " AND act.nom = " + nomAction + " AND quantite_action - " + nbAction + " >= 0 ;";
+                    " WHERE Id_compte = " + idCompte +
+                    " AND (SELECT prix_acquisition FROM invest WHERE Id_Action = " +
+                    "(SELECT Id_Action FROM action WHERE symbole = " + nomSymbole + ")) - "
+                    + prixPaye + " >= 0 " +
+                    "AND (SELECT quantite_action FROM invest WHERE Id_Action = " +
+                    "(SELECT Id_Action FROM action WHERE symbole = " + nomSymbole + ")) - "
+                    + nbAction + " >= 0 ;";
 
             // Préparer la requête SQL
-            PreparedStatement stmtV1 = conn.prepareStatement(updateInvest);
-            // Exécuter la requête
+            PreparedStatement stmtV1 = conn.prepareStatement(updateCompte);
+            // Exécuter la requête pour changer les données
             stmtV1.executeQuery();
 
 
-
-            // Update de tout
-            String updateCompte = "UPDATE invest" +
-                    "SET prix_acquisition = inv.prix_acquisition - " + prixPaye + "," +
-                    "quantite_action = inv.quantite_action - " + nbAction +
-                    "FROM invest AS inv" +
-                    "INNER JOIN action AS act ON inv.Id_Action = act.Id_Action" +
-                    "INNER JOIN compte AS com on com.Id_Compte = inv.Id_Compte" +
-                    "WHERE inv.id_compte = " + idCompte + " AND act.symbole = " + nomSymbole + "AND act.nom = " + nomAction +
-                    "AND quantite_action - " + nbAction + " >= 0;";
+            //----------Update invest-------------
+            String updateInvest = "UPDATE invest\n" +
+                    "SET prix_acquisition = prix_acquisition - " + prixPaye +
+                    "    , quantite_action = quantite_action - " + nbAction +
+                    " WHERE Id_Compte = " + idCompte +
+                    "  AND Id_Action = (SELECT Id_Action FROM action WHERE symbole = " + nomSymbole + ")" +
+                    "  AND prix_acquisition - " + prixPaye + " >= 0 AND quantite_action - " + nbAction + " >= 0 ;";
 
             // Préparer la requête SQL
-            PreparedStatement stmtV2 = conn.prepareStatement(updateCompte);
-            // Exécuter la requête pour changer les données
+            PreparedStatement stmtV2 = conn.prepareStatement(updateInvest);
+            // Exécuter la requête
             stmtV2.executeQuery();
 
 
