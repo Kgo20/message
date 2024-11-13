@@ -1,52 +1,40 @@
 package ca.usherbrooke.fgen.api.business;
 
-javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbProperty;
 import java.io.Serializable;
 
 import javax.json.bind.annotation.JsonbProperty;
 
 
-public class AddMD implements Serializable {
-    @JsonbProperty("nom")
-    private String nom;
+public class AddMDep implements Serializable {
+    @JsonbProperty("idCompte")
+    private String idCompte;
 
-    @JsonbProperty("symbole")
-    private String symbole;
-
-    @JsonbProperty("nbAction")
-    private String nbAction;
-
-    @JsonbProperty("prixCourant")
-    private String prixCourant;
-
-    @JsonbProperty("compte")
-    private String compte;
+    @JsonbProperty("montant")
+    private String montant;
 
     // Constructeur
-    public Buy(String nom, String symbole, String nbAction, String prixCourant, String compte) {
-        this.nom = nom;
-        this.symbole = symbole;
-        this.nbAction = nbAction;
-        this.prixCourant = prixCourant;
-        this.compte = compte;
+    public AddMDep(String idCompte, String montant) {
+        this.idCompte = idCompte;
+        this.montant = montant;
     }
 
-    public Buy() {}
+    public AddMDep() {}
 
-
-    public String getNom() {
-        return nom;
+    public String getIdCompte() {
+        return idCompte;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setIdCompte(String idCompte) {
+        this.idCompte = idCompte;
     }
 
-    public String getSymbole() {
-        return symbole;
+    public String getMontant() {
+        return montant;
     }
 
-    public String getNbAction() {
-        return nbAction;
+    public void setMontant(String montant) {
+        this.montant = montant;
     }
+
 }

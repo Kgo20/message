@@ -3,7 +3,152 @@ var prenom;
 var nom;
 let isSubmitting;
 
+function createUsager() {
+    document.getElementById('createUsager').addEventListener('click', function() {
+        event.preventDefault();
+        if (isSubmitting) return;
+        isSubmitting = true;
 
+        const cip = "cip";
+        const prenom = "Prenom";
+        const nom = "nom";
+        const courriel = "quelquechose@chose.chose";
+        const mot_passe = "projet";
+
+
+        const cree = {
+            cip: cip, // Assurez-vous que cette propriété correspond à votre classe Java
+            prenom: prenom,
+            nom: nom,
+            courriel: courriel,
+            mot_passe: mot_passe
+        };
+
+        console.log(JSON.stringify(cree));
+        fetch('http://localhost:8888/api/createUsager', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cree),
+
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error('Erreur lors de l\'envoi du message: ' + text);
+                    });
+                }
+                return response.json(); // Utilisez directement response.json()
+            })
+            .then(data => {
+                console.log('Message envoyé avec succès:', data);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+    });
+
+    setTimeout(() => {
+        isSubmitting = false; // Réinitialiser après un certain temps
+    }, 1500);
+}
+
+
+function createCompte() {
+    document.getElementById('createCompte').addEventListener('click', function() {
+        event.preventDefault();
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        //L'id du compte est une valeur donnée à la création, je ne sais pas comment aller la chercher
+        const nom = "nom";
+        const cip = "cip";
+        const montant_depart = "3000";
+        const montant = "3000";
+
+
+        const cree = {
+            idCompte: compte, // Assurez-vous que cette propriété correspond à votre classe Java
+            nom: nom,
+            cip: cip,
+            montant_depart: montant_depart,
+            montant: montant
+        };
+
+        console.log(JSON.stringify(cree));
+        fetch('http://localhost:8888/api/createCompte', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cree),
+
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error('Erreur lors de l\'envoi du message: ' + text);
+                    });
+                }
+                return response.json(); // Utilisez directement response.json()
+            })
+            .then(data => {
+                console.log('Message envoyé avec succès:', data);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+    });
+
+    setTimeout(() => {
+        isSubmitting = false; // Réinitialiser après un certain temps
+    }, 1500);
+}
+
+function addMontantDepart() {
+    document.getElementById('addMontantDepart').addEventListener('click', function() {
+        event.preventDefault();
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        const compte = "1";
+        const montant = "1000";
+
+        const add = {
+            idCompte: compte, // Assurez-vous que cette propriété correspond à votre classe Java
+            montant: montant
+        };
+
+        console.log(JSON.stringify(add));
+        fetch('http://localhost:8888/api/addMontantDepart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(add),
+
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error('Erreur lors de l\'envoi du message: ' + text);
+                    });
+                }
+                return response.json(); // Utilisez directement response.json()
+            })
+            .then(data => {
+                console.log('Message envoyé avec succès:', data);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+    });
+
+    setTimeout(() => {
+        isSubmitting = false; // Réinitialiser après un certain temps
+    }, 1500);
+}
 
 function buyAction() {
     document.getElementById('buyAction').addEventListener('click', function() {

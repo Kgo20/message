@@ -164,4 +164,79 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    public static void ajoutMontantDepart(int idCompte, double montant) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            //----------Update invest-------------
+            String addMontant = "UPDATE compte\n" +
+                    "SET montant = montant + ?,  montant_depart = montant_depart + ?" +
+                    "WHERE Id_Compte = ?" +
+                    "AND montant + ? >= 0 AND montant_depart + ? >= 0;";
+
+            // Préparer la requête SQL
+            PreparedStatement stmtM = conn.prepareStatement(addMontant);
+            stmtM.setDouble(1, montant);
+            stmtM.setDouble(2, montant);
+            stmtM.setInt(3, idCompte);
+            stmtM.setDouble(4, montant);
+            stmtM.setDouble(5, montant);
+            // Exécuter la requête
+            stmtM.executeQuery();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+
+        }
+    }
+
+    public static void creeUsager(String cip, String prenom, String nom, String courriel, String mot_passe) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            //----------Ajout usager-------------
+            String creeUsager = "INSERT INTO usager(cip, prenom, nom, courriel, mot_passe) " +
+                    "VALUES (?, ?, ?, ?, ?) " +
+                    "ON CONFLICT (cip) DO NOTHING;";
+
+            // Préparer la requête SQL
+            PreparedStatement stmtU = conn.prepareStatement(creeUsager);
+            stmtU.setString(1, cip);
+            stmtU.setString(2, prenom);
+            stmtU.setString(3, nom);
+            stmtU.setString(4, courriel);
+            stmtU.setString(5, mot_passe);
+            // Exécuter la requête
+            stmtU.executeQuery();
+        }
+        catch(SQLException e){
+
+            e.printStackTrace();
+        }
+    }
+
+    public static void creeCompte(String nom, String cip, double montant_depart, double montant) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            //----------Ajout compte-------------
+            String creeCompte = "INSERT INTO compte( nom, montant, montant_depart, cip) " +
+                    "VALUES (?, ?, ?, ?);";
+
+            // Préparer la requête SQL
+            PreparedStatement stmtC = conn.prepareStatement(creeCompte);
+            stmtC.setString(1, nom);
+            stmtC.setDouble(2, montant);
+            stmtC.setDouble(3, montant_depart);
+            stmtC.setString(4, cip);
+
+            // Exécuter la requête
+            stmtC.executeQuery();
+        }
+        catch(SQLException e){
+
+            e.printStackTrace();
+        }
+    }
 }
