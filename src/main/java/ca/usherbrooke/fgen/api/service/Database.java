@@ -104,6 +104,8 @@ public class Database {
                 stmtA3.executeUpdate();  // Utilisez executeUpdate pour UPDATE
             }
 
+            double coutTotal = prixPaye * nbAction;
+
             //----------Update compte-------------
             String updateCompte = "UPDATE compte AS com " +
                     "SET montant = montant - ? " +
@@ -111,9 +113,9 @@ public class Database {
                     "AND montant - ? >= 0;";
 
             PreparedStatement stmtA4 = conn.prepareStatement(updateCompte);
-            stmtA4.setDouble(1, prixPaye);
+            stmtA4.setDouble(1, coutTotal);
             stmtA4.setInt(2, Integer.parseInt(idCompte));
-            stmtA4.setDouble(3, prixPaye);
+            stmtA4.setDouble(3, coutTotal);
             stmtA4.executeUpdate();  // Utilisez executeUpdate pour UPDATE
         } catch (SQLException e) {
             e.printStackTrace();
@@ -124,21 +126,30 @@ public class Database {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
 
             //----------Update Compte-------------
-            String updateCompte = "UPDATE compte SET montant = montant + ? " +
-                    "WHERE Id_compte = ? " +
-                    "AND (SELECT prix_acquisition FROM invest WHERE Id_Action = " +
-                    "(SELECT Id_Action FROM action WHERE symbole = ?)) - ? >= 0 " +
-                    "AND (SELECT quantite_action FROM invest WHERE Id_Action = " +
-                    "(SELECT Id_Action FROM action WHERE symbole = ?)) - ? >= 0;";
+            //String updateCompte = "UPDATE compte SET montant = montant + ? " +
+            //        "WHERE Id_compte = ?";
+            //        "AND (SELECT prix_acquisition FROM invest WHERE Id_Action = " +
+            //        "(SELECT Id_Action FROM action WHERE symbole = ?)) - ? >= 0 " +
+            //        "AND (SELECT quantite_action FROM invest WHERE Id_Action = " +
+            //        "(SELECT Id_Action FROM action WHERE symbole = ?)) - ? >= 0;";
 
-            PreparedStatement stmtV1 = conn.prepareStatement(updateCompte);
-            stmtV1.setDouble(1, prixPaye);
-            stmtV1.setInt(2, Integer.parseInt(idCompte));
-            stmtV1.setString(3, nomSymbole);
-            stmtV1.setDouble(4, prixPaye);
-            stmtV1.setString(5, nomSymbole);
-            stmtV1.setInt(6, nbAction);
-            stmtV1.executeUpdate();
+            //PreparedStatement stmtV1 = conn.prepareStatement(updateCompte);
+            //stmtV1.setDouble(1, prixPaye);
+            //stmtV1.setInt(2, Integer.parseInt(idCompte));
+            //stmtV1.setString(3, nomSymbole);
+            //stmtV1.setDouble(4, prixPaye);
+            //stmtV1.setString(5, nomSymbole);
+            //stmtV1.setInt(6, nbAction);
+            //stmtV1.executeUpdate();
+
+            String updateCompteV2 = "UPDATE compte SET montant = montant + (? * ?) " +
+                    "WHERE Id_compte = ?";
+
+            PreparedStatement stmtV10 = conn.prepareStatement(updateCompteV2);
+            stmtV10.setDouble(1, prixPaye);
+            stmtV10.setInt(2, nbAction);
+            stmtV10.setInt(3, Integer.parseInt(idCompte));
+            stmtV10.executeUpdate();
 
             //----------Update invest-------------
             String updateInvest = "UPDATE invest SET " +
