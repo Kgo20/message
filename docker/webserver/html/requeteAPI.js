@@ -150,24 +150,15 @@ function addMontantDepart() {
     }, 1500);
 }
 
-function buyAction() {
-    document.getElementById('buyAction').addEventListener('click', function() {
-        event.preventDefault();
-        if (isSubmitting) return;
-        isSubmitting = true;
+function buyAction(symbole, buyQuantity, buyingPrice) {
 
-        const symbole = document.getElementById('Symbol').textContent;
-        const nomAction = document.getElementById('Symbol').textContent;
-        const nbAction = "7";
-        const prixCourant = document.getElementById('Price').textContent;
-        const compte = "1";
 
         const buy = {
-            nom: nomAction, // Assurez-vous que cette propriété correspond à votre classe Java
+            nom: symbole, // Assurez-vous que cette propriété correspond à votre classe Java
             symbole: symbole,
-            nbAction: nbAction,
-            prixCourant: prixCourant,
-            compte: compte,
+            nbAction: buyQuantity,
+            prixCourant: buyingPrice,
+            compte: "1",
         };
 
         console.log(JSON.stringify(buy));
@@ -193,30 +184,18 @@ function buyAction() {
             .catch(error => {
                 console.error('Erreur:', error);
             });
-    });
-
-    setTimeout(() => {
-        isSubmitting = false; // Réinitialiser après un certain temps
-    }, 1500);
 }
 
-function sellAction() {
-    document.getElementById('sellAction').addEventListener('click', function() {
-        event.preventDefault();
-        if (isSubmitting) return;
-        isSubmitting = true;
+function sellAction(symbole, sellQuantity, sellingPrice) {
 
-
-
-        //const symbole = document.getElementById('Symbol').textContent;
-        //const prixVente = document.getElementById('price').textContent;
+        console.log("ici")
 
         const infoSell = {
-            symbole: "ff",
+            symbole: symbole,
             compte: "1",
             cip: cip,
-            nbAVendre: "2",
-            prixVente: "45",
+            nbAVendre: sellQuantity,
+            prixVente: sellingPrice,
         };
 
         console.log(JSON.stringify(infoSell));
@@ -242,12 +221,20 @@ function sellAction() {
             .catch(error => {
                 console.error('Erreur:', error);
             });
-    });
-
-    setTimeout(() => {
-        isSubmitting = false; // Réinitialiser après un certain temps
-    }, 1500);
 }
+
+function getActualPrice(symbol, idElement) {
+        const apiKey = "cror3bhr01qo7n2ihk7gcror3bhr01qo7n2ihk80"; // API key compte zach pour finnhub
+        fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.c + " $");
+                document.getElementById(idElement).innerHTML = data.c
+            })
+            .catch(error => console.error('Error:', error)
+            );
+}
+
 
 function getListActionCompte() {
     //const cip = document.getElementById('cip').textContent;
@@ -277,23 +264,27 @@ function getListActionCompte() {
 }
 
 function afficherDonnees(data) {
+    document.getElementById("solde").textContent = "Solde: " + data[0].montant + "$";
     const container = document.getElementById('resultat'); // Cibler le tbody
     container.innerHTML = ''; // Vider le conteneur avant d'ajouter les nouvelles données
-
     data.forEach(compte => {
         // Créer une nouvelle ligne
         const row = document.createElement('tr');
 
         // Ajouter des cellules avec les données appropriées
         row.innerHTML = `
-            <td id="${compte.diminutif}">${compte.diminutif}</td> <!-- Symbole -->
-            <td>${compte.nom}</td> <!-- Nom -->
-            <td>${compte.quantie_action}</td> <!-- Quantité -->
-            <td>${compte.prix_acquisition}</td> <!-- Prix d'acquisition -->
-            <td>${compte.montant}</td> <!-- Prix actuel -->
-            <td>${calculateProfit(compte.prix_acquisition, compte.montant, compte.quantie_action)}</td> <!-- Profit -->
-            <td><button class="btn_vendre" id="${compte.diminutif}">Delete</button></td>
+            <td class="align-content-center" id="${compte.diminutif}">${compte.diminutif}</td> <!-- Symbole -->
+            <td class="align-content-center">${compte.nom}</td> <!-- Nom -->
+            <td class="align-content-center text-end">${compte.quantie_action}</td> <!-- Quantité -->
+            <td class="align-content-center text-end">${compte.prix_acquisition}</td> <!-- Prix d'acquisition -->
+            <td class="align-content-center text-end" id="actualPrice-${compte.diminutif}"></td> <!-- Prix actuel -->
+            <td class="align-content-center text-end">${calculateProfit(compte.prix_acquisition, compte.montant, compte.quantie_action)}</td> <!-- Profit -->
+            <td class="align-content-center text-center">
+                <button class="btn btn-primary" id="buy-${compte.diminutif}">Acheter</button>
+                <button class="btn btn-primary" id="delete-${compte.diminutif}">Vendre</button>
+            </td>
         `;
+        getActualPrice(compte.diminutif, `actualPrice-${compte.diminutif}`);
 
         // Ajouter la ligne au tbody
         container.appendChild(row);
@@ -306,24 +297,24 @@ function calculateProfit(prixAcquisition, montant, quantity) {
     return ((currentPrice - acquisition) * quantity).toFixed(2); // Retourne le profit formaté à 2 décimales
 }
 
-    var keycloak;
-    function initKeycloak() {
-        keycloak = new Keycloak({
-            "realm": "usager",
-            "auth-server-url": "http://localhost:8180/",
-            "ssl-required": "external",
-            "clientId": "frontend",
-            "public-client": true,
-            "confidential-port": 0
-        });
-        keycloak.init({onLoad: 'login-required'}).then(function (authenticated) {
-            //alert(authenticated ? 'authenticated' : 'not authenticated');
+var keycloak;
+function initKeycloak() {
+    keycloak = new Keycloak({
+        "realm": "usager",
+        "auth-server-url": "http://localhost:8180/",
+        "ssl-required": "external",
+        "clientId": "frontend",
+        "public-client": true,
+        "confidential-port": 0
+    });
+    keycloak.init({onLoad: 'login-required'}).then(function (authenticated) {
+        //alert(authenticated ? 'authenticated' : 'not authenticated');
 
-        }).catch(function () {
-            alert('failed to initialize');
-        });
-    }
-    initKeycloak();
+    }).catch(function () {
+        alert('failed to initialize');
+    });
+}
+initKeycloak();
 
 function requestStudent() {
     fetch("http://localhost:8888/api/student", {
@@ -344,6 +335,8 @@ function requestStudent() {
             nom = data.last_name;
 
             console.log("Response: ", data);
+            document.getElementById("username").textContent = cip;
+
             // Une fois la réponse réussie, arrêter l'interrogation
             clearInterval(requestInterval);
         })
@@ -363,11 +356,8 @@ function requestStudent() {
 let requestInterval;
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("ccc");
     requestInterval = setInterval(requestStudent, 200);
-    console.log("8");
     getListActionCompte();
-    console.log("9");
 
 });
 

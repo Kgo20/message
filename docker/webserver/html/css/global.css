@@ -1,0 +1,24 @@
+:root {
+    --background-color: #f3fcff;
+    --secondary-color: #4A606D;
+    --primary-color: #1A8799;
+}
+
+body {
+    background-color: var(--background-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color) !important;
+}
+
+
+.content {
+    max-width: 80% !important;
+    justify-self: center;
+
+}
