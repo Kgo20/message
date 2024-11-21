@@ -143,6 +143,10 @@ function getCompteId() {
             compteId = data.compteId;
             montant = data.montant;
             montantDepart = data.montant_depart;
+            sessionStorage.setItem('cip', cip);
+            sessionStorage.setItem('compteId', compteId);
+
+
         })
         .catch(error => {
             console.error('Erreur:', error);
