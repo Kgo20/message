@@ -98,6 +98,50 @@ public class MessageService {
 		return Database.loadCompte(cip);
 	}
 
+	@GET
+	@Path("getCompteId")
+	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
+	public Compte getCompteId(@QueryParam("cip") String cip) { // Ajoutez le paramètre
+		return Database.getCompteId(cip);
+	}
+
+	@POST
+	@Path("createUsager")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public boolean createCompte(CreateUsager infoCreate) {
+		System.out.println("Infos reçues: " + infoCreate.getCip());
+		System.out.println("Infos reçues: " + infoCreate.getPrenom());
+		System.out.println("Infos reçues: " + infoCreate.getNom());
+		System.out.println("Infos reçues: " + infoCreate.getCourriel());
+		Database.creeUsager(infoCreate.getCip(), infoCreate.getPrenom(), infoCreate.getNom(), infoCreate.getCourriel());
+		// Vous pouvez ici traiter les données comme nécessaire
+		return true;
+	}
+
+	@POST
+	@Path("createCompte")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public boolean createCompte(CreateCompte infoCreate) {
+		System.out.println("Infos reçues: " + infoCreate.getNom());
+		System.out.println("Infos reçues: " + infoCreate.getCip());
+		System.out.println("Infos reçues: " + infoCreate.getMontant_depart());
+		System.out.println("Infos reçues: " + infoCreate.getMontant());
+		Database.creeCompte(infoCreate.getNom(), infoCreate.getCip(), Double.parseDouble(infoCreate.getMontant_depart()), Double.parseDouble(infoCreate.getMontant()));
+		// Vous pouvez ici traiter les données comme nécessaire
+		return true;
+	}
+
+	@POST
+	@Path("addMontantDepart")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public boolean addMontantDepart(AddMDep infoAdd) {
+		System.out.println("Infos reçues: " + infoAdd.getIdCompte());
+		System.out.println("Infos reçues: " + infoAdd.getMontant());
+		Database.ajoutMontantDepart(infoAdd.getIdCompte(), Double.parseDouble(infoAdd.getMontant()));
+		// Vous pouvez ici traiter les données comme nécessaire
+		return true;
+	}
+
 	@POST
 	@Path("buyAction")
 	@Consumes(MediaType.APPLICATION_JSON)

@@ -1,5 +1,6 @@
 package ca.usherbrooke.fgen.api.service;
 
+import ca.usherbrooke.fgen.api.business.Compte;
 import ca.usherbrooke.fgen.api.business.Info;
 
 import java.sql.*;
@@ -10,6 +11,36 @@ public class Database {
     private static final String URL = "jdbc:postgresql://localhost:5444/postgres";
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
+
+
+    public static Compte getCompteId(String cip) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String query = "select c.id_compte, c.nom, c.montant, c.montant_depart " +
+                    "from compte as c where c.cip = ? ";
+
+
+            // Préparer la requête SQL
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, cip);
+            // Exécuter la requête et récupérer les résultats
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Compte compte = new Compte(
+                        rs.getString("id_compte"),
+                        rs.getString("nom"),
+                        rs.getString("montant"),
+                        rs.getString("montant_depart")
+                );
+                return compte;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     public static List<Info> loadCompte(String cip) {
         List<Info> comptes = new ArrayList<>();
@@ -172,6 +203,118 @@ public class Database {
             stmtV3.executeUpdate();
 
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void ajoutMontantDepart(String idCompte, double montant) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            //----------Update invest-------------
+            String addMontant = "UPDATE compte\n" +
+                    "SET montant = montant + ?,  montant_depart = montant_depart + ?" +
+                    "WHERE Id_Compte = ?" +
+                    "AND montant + ? >= 0 AND montant_depart + ? >= 0;";
+
+            // Préparer la requête SQL
+            PreparedStatement stmtM = conn.prepareStatement(addMontant);
+            stmtM.setDouble(1, montant);
+            stmtM.setDouble(2, montant);
+            stmtM.setInt(3, Integer.parseInt(idCompte));
+            stmtM.setDouble(4, montant);
+            stmtM.setDouble(5, montant);
+            // Exécuter la requête
+            stmtM.executeUpdate();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+
+        }
+    }
+
+    public static void creeUsager(String cip, String prenom, String nom, String courriel) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            String queryUsagerExist = "SELECT COUNT(*) FROM usager WHERE cip = ?;";
+            PreparedStatement stmtque = conn.prepareStatement(queryUsagerExist);
+            stmtque.setString(1, cip);
+
+            ResultSet rs2 = stmtque.executeQuery();
+            int countUsager = 0;
+
+            if (rs2.next()) {
+                countUsager = rs2.getInt(1);  // Récupère la première colonne du résultat
+            }
+
+            if (countUsager == 0) {
+                //----------Ajout usager-------------
+                String creeUsager = "INSERT INTO usager(cip, prenom, nom, courriel) " +
+                        "VALUES (?, ?, ?, ?) " +
+                        "ON CONFLICT (cip) DO NOTHING;";
+
+                // Préparer la requête SQL
+                PreparedStatement stmtU = conn.prepareStatement(creeUsager);
+                stmtU.setString(1, cip);
+                stmtU.setString(2, prenom);
+                stmtU.setString(3, nom);
+                stmtU.setString(4, courriel);
+                // Exécuter la requête
+                stmtU.executeUpdate();
+            }
+
+            String queryCompteExist = "SELECT COUNT(*) FROM compte WHERE cip = ? AND nom = 'Porfolio';";
+            PreparedStatement stmtqce = conn.prepareStatement(queryCompteExist);
+            stmtqce.setString(1, cip);
+
+            ResultSet rs = stmtqce.executeQuery();
+            int count = 0;
+
+            if (rs.next()) {
+                count = rs.getInt(1);  // Récupère la première colonne du résultat
+            }
+
+            if (count == 0) {
+
+                String creeCompte = "INSERT INTO compte( nom, montant, montant_depart, cip) " +
+                        "VALUES (?, ?, ?, ?);";
+
+                // Préparer la requête SQL
+                PreparedStatement stmtC = conn.prepareStatement(creeCompte);
+                stmtC.setString(1, "Porfolio");
+                stmtC.setDouble(2, 10000);
+                stmtC.setDouble(3, 10000);
+                stmtC.setString(4, cip);
+                stmtC.executeUpdate();
+            }
+
+        }
+        catch(SQLException e){
+
+            e.printStackTrace();
+        }
+    }
+
+    public static void creeCompte(String nom, String cip, double montant_depart, double montant) {
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            //----------Ajout compte-------------
+            String creeCompte = "INSERT INTO compte( nom, montant, montant_depart, cip) " +
+                    "VALUES (?, ?, ?, ?);";
+
+            // Préparer la requête SQL
+            PreparedStatement stmtC = conn.prepareStatement(creeCompte);
+            stmtC.setString(1, nom);
+            stmtC.setDouble(2, montant);
+            stmtC.setDouble(3, montant_depart);
+            stmtC.setString(4, cip);
+
+            // Exécuter la requête
+            stmtC.executeQuery();
+        }
+        catch(SQLException e){
+
             e.printStackTrace();
         }
     }

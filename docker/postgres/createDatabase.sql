@@ -3,7 +3,6 @@ CREATE TABLE usager(
                        prenom VARCHAR(50)  NOT NULL,
                        nom VARCHAR(50)  NOT NULL,
                        courriel VARCHAR(50) ,
-                       mot_passe VARCHAR(50)  NOT NULL,
                        date_creation TIMESTAMP DEFAULT NOW(),
                        PRIMARY KEY(cip)
 );
