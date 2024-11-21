@@ -98,6 +98,13 @@ public class MessageService {
 		return Database.loadCompte(cip);
 	}
 
+	@GET
+	@Path("getCompteId")
+	@Consumes(MediaType.APPLICATION_JSON) // Ajoutez cette annotation
+	public Compte getCompteId(@QueryParam("cip") String cip) { // Ajoutez le paramètre
+		return Database.getCompteId(cip);
+	}
+
 	@POST
 	@Path("createUsager")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -106,8 +113,7 @@ public class MessageService {
 		System.out.println("Infos reçues: " + infoCreate.getPrenom());
 		System.out.println("Infos reçues: " + infoCreate.getNom());
 		System.out.println("Infos reçues: " + infoCreate.getCourriel());
-		System.out.println("Infos reçues: " + infoCreate.getMot_passe());
-		Database.creeUsager(infoCreate.getCip(), infoCreate.getPrenom(), infoCreate.getNom(), infoCreate.getCourriel(), infoCreate.getMot_passe());
+		Database.creeUsager(infoCreate.getCip(), infoCreate.getPrenom(), infoCreate.getNom(), infoCreate.getCourriel());
 		// Vous pouvez ici traiter les données comme nécessaire
 		return true;
 	}
@@ -131,7 +137,7 @@ public class MessageService {
 	public boolean addMontantDepart(AddMDep infoAdd) {
 		System.out.println("Infos reçues: " + infoAdd.getIdCompte());
 		System.out.println("Infos reçues: " + infoAdd.getMontant());
-		Database.ajoutMontantDepart(Integer.parseInt(infoAdd.getIdCompte()), Double.parseDouble(infoAdd.getMontant()));
+		Database.ajoutMontantDepart(infoAdd.getIdCompte(), Double.parseDouble(infoAdd.getMontant()));
 		// Vous pouvez ici traiter les données comme nécessaire
 		return true;
 	}

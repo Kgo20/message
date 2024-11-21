@@ -9,7 +9,7 @@ public class CreateUsager implements Serializable {
     @JsonbProperty("cip")
     private String cip;
 
-    @JsonbProperty("nom")
+    @JsonbProperty("prenom")
     private String prenom;
 
     @JsonbProperty("nom")
@@ -18,16 +18,13 @@ public class CreateUsager implements Serializable {
     @JsonbProperty("courriel")
     private String courriel;
 
-    @JsonbProperty("mot_passe")
-    private String mot_passe;
 
     // Constructeur
-    public CreateUsager(String cip, String prenom, String nom, String courriel, String mot_passe) {
+    public CreateUsager(String cip, String prenom, String nom, String courriel) {
         this.cip = cip;
         this.prenom = prenom;
         this.nom = nom;
         this.courriel = courriel;
-        this.mot_passe = mot_passe;
     }
 
     public CreateUsager() {}
@@ -58,14 +55,6 @@ public class CreateUsager implements Serializable {
 
     public void setCourriel(String courriel) {
         this.courriel = courriel;
-    }
-
-    public String getMot_passe() {
-        return mot_passe;
-    }
-
-    public void setMot_passe(String mot_passe) {
-        this.mot_passe = mot_passe;
     }
 
 }
