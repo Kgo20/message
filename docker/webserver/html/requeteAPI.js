@@ -10,33 +10,33 @@ let isSubmitting;
 function createUsager(cip, prenom, nom, email) {
 
     const cree = {
-            cip: cip,
-            prenom: prenom,
-            nom: nom,
-            courriel: email,
-        };
-        console.log(JSON.stringify(cree));
-        fetch('http://localhost:8888/api/createUsager', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(cree),
+        cip: cip,
+        prenom: prenom,
+        nom: nom,
+        courriel: email,
+    };
+    console.log(JSON.stringify(cree));
+    fetch('http://localhost:8888/api/createUsager', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cree),
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error('Erreur lors de l\'envoi du message: ' + text);
+                });
+            }
+            return response.json(); // Utilisez directement response.json()
         })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error('Erreur lors de l\'envoi du message: ' + text);
-                    });
-                }
-                return response.json(); // Utilisez directement response.json()
-            })
-            .then(data => {
-                console.log('Message envoyé avec succès:', data);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
+        .then(data => {
+            console.log('Message envoyé avec succès:', data);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
 }
 
 
@@ -92,38 +92,38 @@ function createCompte() {
 }
 
 function addMontantDepart() {
-        const compte = compteId;
-        const montant =  document.getElementById("plusplus").value;
-        console.log("motant", montant);
-        const add = {
-            idCompte: compte, // Assurez-vous que cette propriété correspond à votre classe Java
-            montant: montant
-        };
+    const compte = compteId;
+    const montant =  document.getElementById("plusplus").value;
+    console.log("motant", montant);
+    const add = {
+        idCompte: compte, // Assurez-vous que cette propriété correspond à votre classe Java
+        montant: montant
+    };
 
-        console.log(JSON.stringify(add));
-        fetch('http://localhost:8888/api/addMontantDepart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(add),
+    console.log(JSON.stringify(add));
+    fetch('http://localhost:8888/api/addMontantDepart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(add),
 
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error('Erreur lors de l\'envoi du message: ' + text);
+                });
+            }
+            return response.json(); // Utilisez directement response.json()
         })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error('Erreur lors de l\'envoi du message: ' + text);
-                    });
-                }
-                return response.json(); // Utilisez directement response.json()
-            })
-            .then(data => {
-                getListActionCompte2();
-                console.log('Message envoyé avec succès:', data);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
+        .then(data => {
+            getListActionCompte2();
+            console.log('Message envoyé avec succès:', data);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
 }
 
 function getCompteId() {
@@ -153,84 +153,84 @@ function getCompteId() {
 function buyAction(symbole, buyQuantity, buyingPrice) {
 
 
-        const buy = {
-            nom: symbole, // Assurez-vous que cette propriété correspond à votre classe Java
-            symbole: symbole,
-            nbAction: buyQuantity,
-            prixCourant: buyingPrice,
-            compte: compteId,
-        };
+    const buy = {
+        nom: symbole, // Assurez-vous que cette propriété correspond à votre classe Java
+        symbole: symbole,
+        nbAction: buyQuantity,
+        prixCourant: buyingPrice,
+        compte: compteId,
+    };
 
-        console.log(JSON.stringify(buy));
-        fetch('http://localhost:8888/api/buyAction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(buy),
+    console.log(JSON.stringify(buy));
+    fetch('http://localhost:8888/api/buyAction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(buy),
 
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error('Erreur lors de l\'envoi du message: ' + text);
+                });
+            }
+            return response.json(); // Utilisez directement response.json()
         })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error('Erreur lors de l\'envoi du message: ' + text);
-                    });
-                }
-                return response.json(); // Utilisez directement response.json()
-            })
-            .then(data => {
-                console.log('Message envoyé avec succès:', data);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
+        .then(data => {
+            console.log('Message envoyé avec succès:', data);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
 }
 
 function sellAction(symbole, sellQuantity, sellingPrice) {
 
-        const infoSell = {
-            symbole: symbole,
-            compte: compteId,
-            cip: cip,
-            nbAVendre: sellQuantity,
-            prixVente: sellingPrice,
-        };
+    const infoSell = {
+        symbole: symbole,
+        compte: compteId,
+        cip: cip,
+        nbAVendre: sellQuantity,
+        prixVente: sellingPrice,
+    };
 
-        console.log(JSON.stringify(infoSell));
-        fetch('http://localhost:8888/api/sellAction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(infoSell),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de l\'envoi du message');
-                }
-                // Vérifier s'il y a un contenu à traiter
-                return response.text().then(text => {
-                    return text ? JSON.parse(text) : {}; // Si le texte est vide, retourner un objet vide
-                });
-            })
-            .then(data => {
-                console.log('Message envoyé avec succès:', data);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
+    console.log(JSON.stringify(infoSell));
+    fetch('http://localhost:8888/api/sellAction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(infoSell),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur lors de l\'envoi du message');
+            }
+            // Vérifier s'il y a un contenu à traiter
+            return response.text().then(text => {
+                return text ? JSON.parse(text) : {}; // Si le texte est vide, retourner un objet vide
             });
+        })
+        .then(data => {
+            console.log('Message envoyé avec succès:', data);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
 }
 
 function getActualPrice(symbol, idElement) {
-        const apiKey = "cror3bhr01qo7n2ihk7gcror3bhr01qo7n2ihk80"; // API key compte zach pour finnhub
-        fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.c + " $");
-                document.getElementById(idElement).innerHTML = data.c
-            })
-            .catch(error => console.error('Error:', error)
-            );
+    const apiKey = "cror3bhr01qo7n2ihk7gcror3bhr01qo7n2ihk80"; // API key compte zach pour finnhub
+    fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.c + " $");
+            document.getElementById(idElement).innerHTML = data.c
+        })
+        .catch(error => console.error('Error:', error)
+        );
 }
 
 
@@ -426,24 +426,6 @@ let requestInterval;
 document.addEventListener('DOMContentLoaded', function() {
     requestInterval = setInterval(requestStudent, 200);
 });
-
-
-function fetch5Years(symbol) {
-    const today = new Date();
-    const fiveYearsAgo = new Date();
-    fiveYearsAgo.setFullYear(today.getFullYear() - 5);
-
-    const GraphFromDate = fiveYearsAgo.toISOString().split('T')[0];  // 5 years ago
-    const GraphToDate = today.toISOString().split('T')[0];  // today
-
-    fetch(`https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?from=${GraphFromDate}&to=${GraphToDate}&apikey=${FMPapiKey}`)
-        .then(response => response.json())
-        .then(data => {
-            storedData = data["historical"];  // Store the data
-            updateGraph('6m');  // By default, show data for the last 6 month
-        });
-    return storedData;
-}
 
 
 

@@ -53,7 +53,7 @@ CREATE TABLE invest(
 
 
 
-INSERT INTO  usager(cip, prenom, nom, courriel, mot_passe, date_creation) VALUES ('roya1414','Alexandre','Roy','a@a.com','projet','2024-09-25 19:10:25-07');
+INSERT INTO  usager(cip, prenom, nom, courriel, date_creation) VALUES ('roya1414','Alexandre','Roy','a@a.com','2024-09-25 19:10:25-07');
 INSERT INTO  log(cip_usager, description, date_creation) VALUES ('roya1414','A achete une action','2024-09-25 19:10:25-07');
 INSERT INTO  compte(nom, montant, montant_depart, date_creation, cip) VALUES ('creativipi', 10000, 8000, '2024-09-25 19:10:25-07', 'roya1414');
 INSERT INTO  action(symbole, nom, date_creation) VALUES ('aapl', 'Apple', '2024-09-25 19:10:25-07');

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interface Investissement</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!--    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
     <link href="css/navbar.css" rel="stylesheet">
 </head>
 <body>
@@ -21,6 +21,8 @@
     <div class="d-flex gap-3">
         <a href="index.html" class="text-decoration-none btn btn-outline-light btn-lg">Profil</a>
         <a href="recherche.html" class="text-decoration-none btn btn-outline-light btn-lg">Recherche</a>
+        <a onclick="logout()" class="text-decoration-none btn btn-outline-light btn-lg">Logout</a>
+
     </div>
 
     <span id="username" class="fw-bold text-white">roya1414</span>
@@ -34,11 +36,18 @@
 
 <div class="content">
     <div class="row">
-        <div class="col-12">
-            <h1 id="solde" class="text-end">Solde : 7 565.62$</h1>
+        <div class="col-12 d-flex justify-content-end align-items-center">
+            <h1 id="startingAmount" class="me-3">Montant Départ: </h1>
         </div>
     </div>
-    <div id="portfolio-graph" class="col-12"></div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end align-items-center">
+            <h1 id="solde" class="me-3">Solde : 7 565.62$</h1>
+            <button onclick="addMontantDepart()" class="btn btn-primary">Plus d'argent</button>
+            <input type="number" id="plusplus" class="ms-2 form-control" style="width: 200px;" placeholder="Montant de plus">
+        </div>
+    </div>
+<!--    <div id="portfolio-graph" class="col-12"></div>-->
     <div class="row">
         <div class="col-12">
             <h2>Actif populaire</h2>
@@ -96,7 +105,14 @@
             </table>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end align-items-center">
+            <h1 id="totaltotal">Total: </h1>
+        </div>
+    </div>
 </div>
+
+
 
 <!-- Modal Sell -->
 <div class="modal fade" id="sellModal" tabindex="-1" aria-labelledby="sellModalLabel" aria-hidden="true">
@@ -241,7 +257,6 @@
 <script src="requeteAPI.js"></script>
 <script src="js/modalDeleteIndex.js"></script>
 <script src="js/loader.js"></script>
-<script src="js/portfolioGraph.js"></script>
-
+<!--<script src="js/portfolioGraph.js"></script>-->
 </body>
 </html>
