@@ -327,7 +327,6 @@ function getListActionCompte2() {
             console.log('Données récupérées avec succès:', data);
             // Ici, tu peux manipuler les données récupérées et les afficher dans ton HTML
             console.log("qwerty: ", data);
-
             afficherDonnees2(data);
         })
         .catch(error => {
@@ -336,16 +335,19 @@ function getListActionCompte2() {
 }
 
 function afficherDonnees2(data) {
+    getCompteId();
+    console.log("qwertyyyiiib", montant);
+    setTimeout(() => {
+        if (data.length != 0) {
+            document.getElementById("solde").textContent = "Solde: " + data[0].montant + "$";
+            document.getElementById("startingAmount").textContent = "Montant Départ: " + data[0].montant_depart + "$";
+        } else {
+            console.log("gewv");
+            document.getElementById("solde").textContent = "Solde: " + montant + "$";
+            document.getElementById("startingAmount").textContent = "Montant Départ: " + montantDepart + "$";
+        }
+    }, 200); // Délai en millisecondes
 
-    if(data.length != 0) {
-        document.getElementById("solde").textContent = "Solde: " + data[0].montant + "$";
-        document.getElementById("startingAmount").textContent = "Montant Départ: " + data[0].montant_depart + "$";
-    } else {
-        document.getElementById("solde").textContent = "Solde: " + montant + "$";
-        document.getElementById("startingAmount").textContent = "Montant Départ: " + montantDepart + "$";
-
-
-    }
 }
 
 function calculateProfit(prixAcquisition, montant, quantity) {
