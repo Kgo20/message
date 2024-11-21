@@ -39,14 +39,17 @@
 
 <main>
     <div class="content">
-        <div class="text-center m-5">
-            <input class="searchInput" type="text" list="api-options" id="SymbolInput" name="dynamic-input" autocomplete="off" placeholder="Inforamtion sur...">
+        <div class="text-center mt-3 mb-3 row">
+            <div class="col-8">
+                <input class="searchInput form-control" type="text" list="api-options" id="SymbolInput" name="dynamic-input" autocomplete="off" placeholder="Inforamtion sur...">
+            </div>
             <datalist id="api-options"></datalist>
-            <button type="button" id="search-button" class="btn btn-primary btn-sm "
+            <button type="button" id="search-button" class="btn me-3 btn-primary btn-sm col-2 ms-auto"
                     onclick="fillResultTable(document.getElementById('SymbolInput').value);
                     fetch5Years(document.getElementById('SymbolInput').value);
                     fetch5Days(document.getElementById('SymbolInput').value);
-                    playSound(); fillResultTable(document.getElementById('SymbolInput').value);
+                    playSound();
+                    fetchSymbolName(document.getElementById('SymbolInput').value);
                     DrawGraph(document.getElementById('SymbolInput').value)">
                 Recherche
             </button>
@@ -62,7 +65,7 @@
             </script>
         </div>
 
-        <div id='DataGraph'></div>
+        <div id='DataGraph' class="col-12"></div>
 
         <div class="btn-group btn-group-toggle text-center mt-1 mb-5 col-12" data-toggle="buttons">
             <label class="btn btn-secondary">
@@ -89,16 +92,18 @@
         </div>
         <table class="table table-striped">
             <tr>
+                <td>Nom</td>
                 <td>Symbole</td>
                 <td>Prix actuel</td>
                 <td>Variation</td>
                 <td>Variation %</td>
-                <td>Plus haut prix de la journée</td>
-                <td>Plus bas prix de la journée</td>
-                <td>Première vente du jours</td>
-                <td>Dernière vente hier</td>
+                <td>Max journalier</td>
+                <td>Min journalier</td>
+                <td>Prix ouverture</td>
+                <td>Prix Fermeture</td>
             </tr>
             <tr>
+                <td id="Name"></td>
                 <td id="Symbol"></td>
                 <td id="Price"></td>
                 <td id="Var"> </td>
@@ -110,57 +115,70 @@
             </tr>
         </table>
 
-        <button id="openModalBtn" class="text-decoration-none btn btn-outline-success btn-lg">Acheter cette action</button>
+        <div class="text-center">
+            <button id="buy" class="text-decoration-none btn btn-outline-success btn-lg mb-5">Acheter cette action</button>
+        </div>
 
 
-        <div id="myModal" class="modal">
 
-            <!-- Contenu de la modale -->
-            <div class="modal-content">
-                <span class="close">&times;</span>
+        <!-- Modal Buy -->
+        <div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="buyModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="buyModalLabel">Acheter</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="buyForm">
+                            <div class="row mb-3">
+                                <label for="buy-symbol" class="col-sm-4 col-form-label text-end">Symbole</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="buy-symbol" readonly>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="buy-name" class="col-sm-4 col-form-label text-end">Nom</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="buy-name" readonly>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="buy-quantity" class="col-sm-4 col-form-label text-end">Quantité actuelle</label>
+                                <div class="col-sm-8">
+                                    <input type="number" class="form-control" id="buy-quantity" readonly>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="buy-purchasePrice" class="col-sm-4 col-form-label text-end">Prix d'achat</label>
+                                <div class="col-sm-8">
+                                    <input type="number" class="form-control" id="buy-purchasePrice" readonly>
+                                </div>
+                            </div>
 
-                <h2>Fenêtre d'âchat</h2>
-                <div style=" margin-top: 60%;">
-                    <button class="btn_acheter">Acheter</button>
-                    <button class="btn_vendre">Vendre</button>
+                            <div class="row mb-3">
+                                <label for="buy-MoveQuantity" class="col-sm-4 col-form-label text-end">Quantité à acheter</label>
+                                <div class="col-sm-8">
+                                    <input type="number" class="form-control" id="buy-moveQuantity" min="1" required>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-primary" id="confirmBuy">Confirmer l'achat</button>
+                    </div>
                 </div>
-
             </div>
-
         </div>
     </div>
-    <script>
-        // Obtenir la modale
-        var modal = document.getElementById("myModal");
-
-        // Obtenir le bouton qui ouvre la modale
-        var btn = document.getElementById("openModalBtn");
-
-        // Obtenir l'élément <span> qui ferme la modale
-        var span = document.getElementsByClassName("close")[0];
-
-        // Quand l'utilisateur clique sur le bouton, ouvrir la modale
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        // Quand l'utilisateur clique sur <span> (x), fermer la modale
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-        // Quand l'utilisateur clique n'importe où en dehors de la modale, fermer la modale
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
 </main>
     <script>
         let storedData = [];
         let storedDataPrecise = [];
         const FMPapiKey = "hTK26S1kotNQBciHhEBBkyotOP0okUcL"; // API key compte zach pour FMP
         const apiKey = "cror3bhr01qo7n2ihk7gcror3bhr01qo7n2ihk80"; // API key compte zach pour finnhub
+
         function fillResultTable(symbol){
             fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`)
                 .then(response => response.json())
@@ -210,7 +228,7 @@
         input.addEventListener('input', debounce(function() {
             const symbol = input.value;
             fetchAPIData(symbol);
-        }, 300));
+        }, 100));
 
         function fetch5Years(symbol) {
             const today = new Date();
@@ -242,6 +260,18 @@
                 })
         }
 
+        function fetchSymbolName(symbol) {
+            console.log("pipi");
+            fetch(`https://financialmodelingprep.com/api/v3/quote-order/${symbol}?apikey=${FMPapiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        document.getElementById("Name").textContent = data[0].name;
+                    } else {
+                        document.getElementById("Name").textContent = "Data not found";
+                    }
+                })
+        }
 
         function updateGraph(interval) {
             let data = [];
@@ -403,6 +433,6 @@
             });
         });
     </script>
-
+<script src="js/modalBuyRecherche.js"></script>
 </body>
 </html>
